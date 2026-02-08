@@ -1,0 +1,38 @@
+#include <Servo.h>
+
+Servo servoX;
+Servo servoY;
+
+void setup() {
+  Serial.begin(115200);
+  servoX.attach(9);
+  servoY.attach(10);
+  
+  // Почетна позиција
+  servoX.write(90);
+  servoY.write(90);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    // Го читаме целиот стринг до новиот ред '\n'
+    String data = Serial.readStringUntil('\n');
+    
+    int commaIndex = data.indexOf(',');
+    if (commaIndex != -1) {
+      // Го делиме стрингот на два дела
+      String partX = data.substring(0, commaIndex);
+      String partY = data.substring(commaIndex + 1);
+      
+      int angleX = partX.toInt();
+      int angleY = partY.toInt();
+      
+      // Безбедносно ограничување
+      angleX = constrain(angleX, 65, 115);
+      angleY = constrain(angleY, 65, 115);
+      
+      servoX.write(angleX); 
+      servoY.write(angleY);
+    }
+  }
+}
